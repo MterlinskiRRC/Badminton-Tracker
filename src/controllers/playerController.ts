@@ -1,46 +1,46 @@
 import { Request, Response } from "express";
+import { HTTP_STATUS } from "../constants/httpStatus";
+import { successResponse } from "../models/responseModel";
 import { PlayerService } from "../services/playerService";
+import { HttpError } from "../utils/httpError";
 
 export class PlayerController {
-    public constructor(private readonly playerService: PlayerService) {}
+    constructor(private readonly playerService: PlayerService) {}
 
-    public getAll = async (_req: Request, res: Response): Promise<void> => {
+    getAll = async (_req: Request, res: Response): Promise<void> => {
         const players = await this.playerService.getAll();
-        res.status(200).json(players);
+        res.status(HTTP_STATUS.OK).json(successResponse(players));
     };
 
-    public getById = async (req: Request, res: Response): Promise<void> => {
+    getById = async (req: Request, res: Response): Promise<void> => {
         const player = await this.playerService.getById(req.params.id);
         if (!player) {
-            res.status(404).json({ message: "Player not found" });
-            return;
+            throw HttpError.notFound("Player not found");
         }
 
-        res.status(200).json(player);
+        res.status(HTTP_STATUS.OK).json(successResponse(player));
     };
 
-    public create = async (req: Request, res: Response): Promise<void> => {
+    create = async (req: Request, res: Response): Promise<void> => {
         const created = await this.playerService.create(req.body);
-        res.status(201).json(created);
+        res.status(HTTP_STATUS.CREATED).json(successResponse(created, "Player created"));
     };
 
-    public patch = async (req: Request, res: Response): Promise<void> => {
+    patch = async (req: Request, res: Response): Promise<void> => {
         const updated = await this.playerService.update(req.params.id, req.body);
         if (!updated) {
-            res.status(404).json({ message: "Player not found" });
-            return;
+            throw HttpError.notFound("Player not found");
         }
 
-        res.status(200).json(updated);
+        res.status(HTTP_STATUS.OK).json(successResponse(updated, "Player updated"));
     };
 
-    public delete = async (req: Request, res: Response): Promise<void> => {
+    delete = async (req: Request, res: Response): Promise<void> => {
         const deleted: boolean = await this.playerService.delete(req.params.id);
         if (!deleted) {
-            res.status(404).json({ message: "Player not found" });
-            return;
+            throw HttpError.notFound("Player not found");
         }
 
-        res.status(204).send();
+        res.status(HTTP_STATUS.NO_CONTENT).send();
     };
 }

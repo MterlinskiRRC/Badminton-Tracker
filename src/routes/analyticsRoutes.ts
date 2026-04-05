@@ -4,6 +4,8 @@ import { analyticsController } from "../services/dependencies";
 
 const analyticsRouter: Router = Router();
 
-analyticsRouter.get("/", verifyFirebaseToken, requireRole("admin"), analyticsController.getSummary);
+analyticsRouter.use(verifyFirebaseToken);
+
+analyticsRouter.get("/", requireRole("admin"), analyticsController.getSummary);
 
 export default analyticsRouter;

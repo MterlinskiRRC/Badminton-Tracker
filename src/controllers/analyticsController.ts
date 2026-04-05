@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
+import { HTTP_STATUS } from "../constants/httpStatus";
+import { successResponse } from "../models/responseModel";
 import { AnalyticsService } from "../services/analyticsService";
 
 export class AnalyticsController {
-    public constructor(private readonly analyticsService: AnalyticsService) {}
+    constructor(private readonly analyticsService: AnalyticsService) {}
 
-    public getSummary = (_req: Request, res: Response): void => {
+    getSummary = (_req: Request, res: Response): void => {
         const analyticsSummary = this.analyticsService.getSummary();
-        res.status(200).json(analyticsSummary);
+        res.status(HTTP_STATUS.OK).json(successResponse(analyticsSummary));
     };
 }

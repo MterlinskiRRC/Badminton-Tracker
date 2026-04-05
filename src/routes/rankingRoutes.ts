@@ -4,6 +4,8 @@ import { rankingController } from "../services/dependencies";
 
 const rankingRouter: Router = Router();
 
-rankingRouter.get("/", verifyFirebaseToken, rankingController.getAll);
+rankingRouter.use(verifyFirebaseToken);
+
+rankingRouter.get("/", rankingController.getAll);
 
 export default rankingRouter;
