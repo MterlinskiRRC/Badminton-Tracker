@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { DecodedIdToken } from "firebase-admin/auth";
 import { getFirebaseAdmin } from "../config/firebase";
+import { AuthenticationError, AuthorizationError } from "../errors/appError";
 
 export async function verifyFirebaseToken(
     req: Request,
-    res: Response,
+    _res: Response,
     next: NextFunction
 ): Promise<void> {
     const bypassAuth: boolean = process.env.BYPASS_AUTH === "true";
@@ -16,12 +17,14 @@ export async function verifyFirebaseToken(
     }
 
     const authHeader: string | undefined = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        res.status(401).json({ message: "Missing or invalid Authorization header" });
+    const token: string | undefined = authHeader?.startsWith("Bearer ")
+        ? authHeader.slice("Bearer ".length)
+        : undefined;
+
+    if (!token) {
+        next(new AuthenticationError("Missing or invalid Authorization header", "TOKEN_NOT_FOUND"));
         return;
     }
-
-    const token: string = authHeader.split(" ")[1];
 
     try {
         const decoded: DecodedIdToken = await getFirebaseAdmin().auth().verifyIdToken(token);
@@ -35,15 +38,15 @@ export async function verifyFirebaseToken(
 
         next();
     } catch (_error: unknown) {
-        res.status(401).json({ message: "Invalid or expired Firebase token" });
+        next(new AuthenticationError("Invalid or expired Firebase token", "TOKEN_INVALID"));
     }
 }
 
 export function requireRole(...allowedRoles: string[]): (req: Request, res: Response, next: NextFunction) => void {
-    return (req: Request, res: Response, next: NextFunction): void => {
+    return (req: Request, _res: Response, next: NextFunction): void => {
         const userRole: string | undefined = req.user?.role;
         if (!userRole || !allowedRoles.includes(userRole)) {
-            res.status(403).json({ message: "Forbidden: insufficient permissions" });
+            next(new AuthorizationError("Forbidden: insufficient permissions", "INSUFFICIENT_ROLE"));
             return;
         }
 
