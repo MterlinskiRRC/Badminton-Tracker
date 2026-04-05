@@ -1,16 +1,9 @@
-export function greet(name: string): string {
-    const message = "Hello, " + name; // Place breakpoint here for debugging
-    console.log(message);
-    return message;
-}
+import app from "./app";
 
-export function add(a: number, b: number): number {
-    const result = a + b; // Place breakpoint here for debugging
-    return result;
-}
+const portFromEnv: string | undefined = process.env.PORT;
+const port: number = portFromEnv ? Number(portFromEnv) : 3000;
 
-// Run the function when executed directly
-if (require.main === module) {
-    greet("World");
-    add(5, 3);
-}
+app.listen(port, (): void => {
+    console.log(`Server running at http://localhost:${port}`);
+    console.log(`Swagger docs at http://localhost:${port}/docs`);
+});
