@@ -1,4 +1,8 @@
 import { Player } from "../models/player";
-import { InMemoryRepository } from "./inMemoryRepository";
+import { FirestoreRepository } from "./firestoreRepository";
 
-export class PlayerRepository extends InMemoryRepository<Player> {}
+export class PlayerRepository extends FirestoreRepository<Player> {
+	constructor() {
+		super("players");
+	}
+}

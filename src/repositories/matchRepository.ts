@@ -1,4 +1,8 @@
 import { Match } from "../models/match";
-import { InMemoryRepository } from "./inMemoryRepository";
+import { FirestoreRepository } from "./firestoreRepository";
 
-export class MatchRepository extends InMemoryRepository<Match> {}
+export class MatchRepository extends FirestoreRepository<Match> {
+	constructor() {
+		super("matches");
+	}
+}
