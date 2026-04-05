@@ -1,4 +1,4 @@
-import { Firestore } from "firebase-admin/firestore";
+import { DocumentSnapshot, Firestore, QueryDocumentSnapshot } from "firebase-admin/firestore";
 import { getFirestoreDb } from "../config/firebase";
 
 export interface BaseEntity {
@@ -15,13 +15,7 @@ export class FirestoreRepository<T extends BaseEntity> {
     async findAll(): Promise<T[]> {
         const snapshot = await this.db.collection(this.collectionName).get();
 
-        return snapshot.docs.map((doc) => {
-            const data: Omit<T, "id"> = doc.data() as Omit<T, "id">;
-            return {
-                id: doc.id,
-                ...data,
-            } as T;
-        });
+        return snapshot.docs.map((doc) => this.mapToEntity(doc));
     }
 
     async findById(id: string): Promise<T | null> {
@@ -30,12 +24,7 @@ export class FirestoreRepository<T extends BaseEntity> {
             return null;
         }
 
-        const data: Omit<T, "id"> = snapshot.data() as Omit<T, "id">;
-
-        return {
-            id: snapshot.id,
-            ...data,
-        } as T;
+        return this.mapToEntity(snapshot);
     }
 
     async create(entity: T): Promise<T> {
@@ -52,12 +41,7 @@ export class FirestoreRepository<T extends BaseEntity> {
 
         await docRef.update(patch);
         const updatedSnapshot = await docRef.get();
-        const data: Omit<T, "id"> = updatedSnapshot.data() as Omit<T, "id">;
-
-        return {
-            id: updatedSnapshot.id,
-            ...data,
-        } as T;
+        return this.mapToEntity(updatedSnapshot);
     }
 
     async delete(id: string): Promise<boolean> {
@@ -69,5 +53,13 @@ export class FirestoreRepository<T extends BaseEntity> {
 
         await docRef.delete();
         return true;
+    }
+
+    private mapToEntity(snapshot: QueryDocumentSnapshot | DocumentSnapshot): T {
+        const data: Omit<T, "id"> = snapshot.data() as Omit<T, "id">;
+        return {
+            id: snapshot.id,
+            ...data,
+        } as T;
     }
 }

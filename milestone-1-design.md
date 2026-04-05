@@ -63,5 +63,5 @@ Badminton Score Tracker API for recording match outcomes and tracking player per
 
 ## Notes
 - Repository implementation now uses Firebase Firestore for player and match persistence.
-- Firestore service account credentials are loaded from firebase-service-account.json (or FIREBASE_SERVICE_ACCOUNT_PATH).
+- Firestore service account credentials are loaded from firebase-service-account.json.
 - OpenAPI starter docs are available at /docs.
