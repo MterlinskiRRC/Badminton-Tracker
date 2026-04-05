@@ -8,13 +8,13 @@ export class AnalyticsService {
 
     private readonly playerActivity: Map<string, number> = new Map<string, number>();
 
-    public recordMatch(playerId: string, opponentId: string): void {
+    recordMatch(playerId: string, opponentId: string): void {
         this.matchesRecorded += 1;
         this.incrementPlayerActivity(playerId);
         this.incrementPlayerActivity(opponentId);
     }
 
-    public getSummary(): AnalyticsSummary {
+    getSummary(): AnalyticsSummary {
         const mostActivePlayers: Array<{ playerId: string; matchCount: number }> =
             Array.from(this.playerActivity.entries())
                 .map(([playerId, matchCount]: [string, number]) => ({ playerId, matchCount }))

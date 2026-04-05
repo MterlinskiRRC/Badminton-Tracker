@@ -3,17 +3,17 @@ import { CreatePlayerInput, Player, UpdatePlayerInput } from "../models/player";
 import { PlayerRepository } from "../repositories/playerRepository";
 
 export class PlayerService {
-    public constructor(private readonly playerRepository: PlayerRepository) {}
+    constructor(private readonly playerRepository: PlayerRepository) {}
 
-    public async getAll(): Promise<Player[]> {
+    async getAll(): Promise<Player[]> {
         return this.playerRepository.findAll();
     }
 
-    public async getById(id: string): Promise<Player | null> {
+    async getById(id: string): Promise<Player | null> {
         return this.playerRepository.findById(id);
     }
 
-    public async create(input: CreatePlayerInput): Promise<Player> {
+    async create(input: CreatePlayerInput): Promise<Player> {
         const now: string = new Date().toISOString();
         const player: Player = {
             id: randomUUID(),
@@ -28,18 +28,18 @@ export class PlayerService {
         return this.playerRepository.create(player);
     }
 
-    public async update(id: string, input: UpdatePlayerInput): Promise<Player | null> {
+    async update(id: string, input: UpdatePlayerInput): Promise<Player | null> {
         return this.playerRepository.update(id, {
             ...input,
             updatedAt: new Date().toISOString(),
         });
     }
 
-    public async delete(id: string): Promise<boolean> {
+    async delete(id: string): Promise<boolean> {
         return this.playerRepository.delete(id);
     }
 
-    public async applyMatchResult(playerId: string, didWin: boolean): Promise<Player | null> {
+    async applyMatchResult(playerId: string, didWin: boolean): Promise<Player | null> {
         const player: Player | null = await this.playerRepository.findById(playerId);
         if (!player) {
             return null;

@@ -2,9 +2,9 @@ import { Ranking } from "../models/ranking";
 import { PlayerService } from "./playerService";
 
 export class RankingService {
-    public constructor(private readonly playerService: PlayerService) {}
+    constructor(private readonly playerService: PlayerService) {}
 
-    public async getRankings(): Promise<Ranking[]> {
+    async getRankings(): Promise<Ranking[]> {
         const players = await this.playerService.getAll();
 
         const sortedPlayers = [...players].sort((a, b): number => {
