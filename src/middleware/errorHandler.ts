@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { HttpError } from "../utils/httpError";
+import { HTTP_STATUS } from "../constants/httpStatus";
+import { AppError, ValidationError } from "../errors/appError";
+import { errorResponse } from "../models/responseModel";
 
 export function errorHandler(
     error: unknown,
@@ -7,11 +9,20 @@ export function errorHandler(
     res: Response,
     _next: NextFunction
 ): void {
-    if (error instanceof HttpError) {
-        res.status(error.statusCode).json({ message: error.message });
+    if (error instanceof ValidationError) {
+        res.status(error.statusCode).json({
+            ...errorResponse(error.message, error.code),
+            details: error.details,
+        });
         return;
     }
 
-    const message: string = error instanceof Error ? error.message : "Internal server error";
-    res.status(500).json({ message });
+    if (error instanceof AppError) {
+        res.status(error.statusCode).json(errorResponse(error.message, error.code));
+        return;
+    }
+
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(
+        errorResponse("An unexpected error occurred", "UNKNOWN_ERROR")
+    );
 }
