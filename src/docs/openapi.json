@@ -1,0 +1,208 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Badminton Score Tracker API",
+        "version": "0.1.0",
+        "description": "Milestone 1 API documentation for players, matches, rankings, and analytics."
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000",
+            "description": "Local development"
+        }
+    ],
+    "tags": [
+        { "name": "Health" },
+        { "name": "Players" },
+        { "name": "Matches" },
+        { "name": "Rankings" },
+        { "name": "Analytics" }
+    ],
+    "paths": {
+        "/health": {
+            "get": {
+                "tags": ["Health"],
+                "summary": "API health check",
+                "responses": {
+                    "200": {
+                        "description": "Service is healthy"
+                    }
+                }
+            }
+        },
+        "/api/v1/players": {
+            "post": {
+                "tags": ["Players"],
+                "summary": "Create a new player (admin)",
+                "security": [{ "bearerAuth": [] }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/CreatePlayer" }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "description": "Player created" },
+                    "401": { "description": "Unauthorized" },
+                    "403": { "description": "Forbidden" }
+                }
+            },
+            "get": {
+                "tags": ["Players"],
+                "summary": "List all players",
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "200": { "description": "Player list" },
+                    "401": { "description": "Unauthorized" }
+                }
+            }
+        },
+        "/api/v1/players/{id}": {
+            "get": {
+                "tags": ["Players"],
+                "summary": "Get player by id",
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+                "responses": {
+                    "200": { "description": "Player found" },
+                    "404": { "description": "Player not found" }
+                }
+            },
+            "patch": {
+                "tags": ["Players"],
+                "summary": "Update player (admin)",
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/UpdatePlayer" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "description": "Player updated" },
+                    "403": { "description": "Forbidden" },
+                    "404": { "description": "Player not found" }
+                }
+            },
+            "delete": {
+                "tags": ["Players"],
+                "summary": "Delete player (admin)",
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+                "responses": {
+                    "204": { "description": "Player deleted" },
+                    "403": { "description": "Forbidden" },
+                    "404": { "description": "Player not found" }
+                }
+            }
+        },
+        "/api/v1/matches": {
+            "post": {
+                "tags": ["Matches"],
+                "summary": "Record a match result",
+                "security": [{ "bearerAuth": [] }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/CreateMatch" }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "description": "Match created" },
+                    "400": { "description": "Invalid payload" },
+                    "404": { "description": "Player or opponent not found" }
+                }
+            },
+            "get": {
+                "tags": ["Matches"],
+                "summary": "List all matches",
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "200": { "description": "Match list" }
+                }
+            }
+        },
+        "/api/v1/matches/{id}": {
+            "get": {
+                "tags": ["Matches"],
+                "summary": "Get match by id",
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
+                "responses": {
+                    "200": { "description": "Match found" },
+                    "404": { "description": "Match not found" }
+                }
+            }
+        },
+        "/api/v1/rankings": {
+            "get": {
+                "tags": ["Rankings"],
+                "summary": "Generate live player rankings",
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "200": { "description": "Ranking list" }
+                }
+            }
+        },
+        "/api/v1/analytics": {
+            "get": {
+                "tags": ["Analytics"],
+                "summary": "Get analytics summary (admin)",
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "200": { "description": "Analytics summary" },
+                    "403": { "description": "Forbidden" }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        },
+        "parameters": {
+            "IdPath": {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": { "type": "string" }
+            }
+        },
+        "schemas": {
+            "CreatePlayer": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                    "name": { "type": "string" }
+                }
+            },
+            "UpdatePlayer": {
+                "type": "object",
+                "properties": {
+                    "name": { "type": "string" }
+                }
+            },
+            "CreateMatch": {
+                "type": "object",
+                "required": ["playerId", "opponentId", "result"],
+                "properties": {
+                    "playerId": { "type": "string" },
+                    "opponentId": { "type": "string" },
+                    "result": { "type": "string", "enum": ["win", "loss"] },
+                    "playedAt": { "type": "string", "format": "date-time" }
+                }
+            }
+        }
+    }
+}
