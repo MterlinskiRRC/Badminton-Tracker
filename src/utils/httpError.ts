@@ -1,8 +1,23 @@
-export class HttpError extends Error {
-    public readonly statusCode: number;
+import { AppError } from "../errors/appError";
 
-    public constructor(statusCode: number, message: string) {
-        super(message);
-        this.statusCode = statusCode;
+export class HttpError extends AppError {
+    constructor(statusCode: number, message: string) {
+        super(message, "HTTP_ERROR", statusCode);
+    }
+
+    static badRequest(message: string): HttpError {
+        return new HttpError(400, message);
+    }
+
+    static unauthorized(message: string): HttpError {
+        return new HttpError(401, message);
+    }
+
+    static forbidden(message: string): HttpError {
+        return new HttpError(403, message);
+    }
+
+    static notFound(message: string): HttpError {
+        return new HttpError(404, message);
     }
 }
