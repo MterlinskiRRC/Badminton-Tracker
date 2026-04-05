@@ -62,6 +62,6 @@ Badminton Score Tracker API for recording match outcomes and tracking player per
 - Local development can use BYPASS_AUTH=true.
 
 ## Notes
-- Repository implementation uses in-memory storage for Milestone 1.
-- Repository interfaces are structured to swap to Firestore in Milestone 2.
+- Repository implementation now uses Firebase Firestore for player and match persistence.
+- Firestore service account credentials are loaded from firebase-service-account.json (or FIREBASE_SERVICE_ACCOUNT_PATH).
 - OpenAPI starter docs are available at /docs.

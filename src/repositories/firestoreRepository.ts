@@ -1,6 +1,9 @@
 import { Firestore } from "firebase-admin/firestore";
 import { getFirestoreDb } from "../config/firebase";
-import { BaseEntity } from "./inMemoryRepository";
+
+export interface BaseEntity {
+    id: string;
+}
 
 export class FirestoreRepository<T extends BaseEntity> {
     private readonly db: Firestore;
