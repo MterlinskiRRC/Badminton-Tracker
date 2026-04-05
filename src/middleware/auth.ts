@@ -5,13 +5,14 @@ import { AuthenticationError, AuthorizationError } from "../errors/appError";
 
 export async function verifyFirebaseToken(
     req: Request,
-    _res: Response,
+    res: Response,
     next: NextFunction
 ): Promise<void> {
     const bypassAuth: boolean = process.env.BYPASS_AUTH === "true";
 
     if (bypassAuth) {
-        req.user = { uid: "local-dev-user", role: "admin" };
+        res.locals.uid = "local-dev-user";
+        res.locals.role = "admin";
         next();
         return;
     }
@@ -31,10 +32,8 @@ export async function verifyFirebaseToken(
         const roleValue: unknown = decoded.role;
         const role: string = typeof roleValue === "string" ? roleValue : "player";
 
-        req.user = {
-            uid: decoded.uid,
-            role,
-        };
+        res.locals.uid = decoded.uid;
+        res.locals.role = role;
 
         next();
     } catch (_error: unknown) {
@@ -43,8 +42,8 @@ export async function verifyFirebaseToken(
 }
 
 export function requireRole(...allowedRoles: string[]): (req: Request, res: Response, next: NextFunction) => void {
-    return (req: Request, _res: Response, next: NextFunction): void => {
-        const userRole: string | undefined = req.user?.role;
+    return (_req: Request, res: Response, next: NextFunction): void => {
+        const userRole: string | undefined = res.locals.role as string | undefined;
         if (!userRole || !allowedRoles.includes(userRole)) {
             next(new AuthorizationError("Forbidden: insufficient permissions", "INSUFFICIENT_ROLE"));
             return;
