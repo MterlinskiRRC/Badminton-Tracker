@@ -4,9 +4,9 @@ export interface AnalyticsSummary {
 }
 
 export class AnalyticsService {
-    private matchesRecorded: number = 0;
+    matchesRecorded: number = 0;
 
-    private readonly playerActivity: Map<string, number> = new Map<string, number>();
+    readonly playerActivity: Map<string, number> = new Map<string, number>();
 
     recordMatch(playerId: string, opponentId: string): void {
         this.matchesRecorded += 1;
@@ -32,7 +32,7 @@ export class AnalyticsService {
         };
     }
 
-    private incrementPlayerActivity(playerId: string): void {
+    incrementPlayerActivity(playerId: string): void {
         const currentValue: number = this.playerActivity.get(playerId) ?? 0;
         this.playerActivity.set(playerId, currentValue + 1);
     }
