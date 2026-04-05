@@ -1,27 +1,32 @@
 import { Router } from "express";
 import { requireRole, verifyFirebaseToken } from "../middleware/auth";
-import { validateBody } from "../middleware/validate";
+import { validateRequest } from "../middleware/validate";
 import { playerController } from "../services/dependencies";
-import { createPlayerSchema, updatePlayerSchema } from "../validation/playerSchemas";
+import { playerSchemas } from "../validation/playerSchemas";
 
 const playerRouter: Router = Router();
 
+playerRouter.use(verifyFirebaseToken);
+
 playerRouter.post(
     "/",
-    verifyFirebaseToken,
     requireRole("admin"),
-    validateBody(createPlayerSchema),
+    validateRequest(playerSchemas.create),
     playerController.create
 );
-playerRouter.get("/", verifyFirebaseToken, playerController.getAll);
-playerRouter.get("/:id", verifyFirebaseToken, playerController.getById);
+playerRouter.get("/", playerController.getAll);
+playerRouter.get("/:id", validateRequest(playerSchemas.getById), playerController.getById);
 playerRouter.patch(
     "/:id",
-    verifyFirebaseToken,
     requireRole("admin"),
-    validateBody(updatePlayerSchema),
+    validateRequest(playerSchemas.patch),
     playerController.patch
 );
-playerRouter.delete("/:id", verifyFirebaseToken, requireRole("admin"), playerController.delete);
+playerRouter.delete(
+    "/:id",
+    requireRole("admin"),
+    validateRequest(playerSchemas.delete),
+    playerController.delete
+);
 
 export default playerRouter;
