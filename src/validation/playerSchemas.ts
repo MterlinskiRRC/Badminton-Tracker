@@ -1,9 +1,25 @@
 import Joi from "joi";
 
-export const createPlayerSchema: Joi.ObjectSchema = Joi.object({
-    name: Joi.string().trim().min(2).max(60).required(),
+const idParamsSchema: Joi.ObjectSchema = Joi.object({
+    id: Joi.string().trim().required(),
 });
 
-export const updatePlayerSchema: Joi.ObjectSchema = Joi.object({
-    name: Joi.string().trim().min(2).max(60).optional(),
-}).min(1);
+export const playerSchemas = {
+    create: {
+        body: Joi.object({
+            name: Joi.string().trim().min(2).max(60).required(),
+        }),
+    },
+    getById: {
+        params: idParamsSchema,
+    },
+    patch: {
+        params: idParamsSchema,
+        body: Joi.object({
+            name: Joi.string().trim().min(2).max(60).optional(),
+        }).min(1),
+    },
+    delete: {
+        params: idParamsSchema,
+    },
+};
