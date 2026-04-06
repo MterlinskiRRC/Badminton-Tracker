@@ -18,15 +18,15 @@ export class PlayerService {
     }
 
     async create(input: CreatePlayerInput): Promise<Player> {
-        const now = new Date().toISOString();
+        const timestamp = new Date().toISOString();
         const player = {
             id: randomUUID(),
             name: input.name,
             totalWins: 0,
             totalLosses: 0,
             winPercentage: 0,
-            createdAt: now,
-            updatedAt: now,
+            createdAt: timestamp,
+            updatedAt: timestamp,
         };
 
         return this.playerRepository.create(player);
@@ -44,13 +44,13 @@ export class PlayerService {
     }
 
     async applyMatchResult(playerId: string, didWin: boolean): Promise<Player | null> {
-        const player = await this.playerRepository.findById(playerId);
-        if (!player) {
+        const existingPlayer = await this.playerRepository.findById(playerId);
+        if (!existingPlayer) {
             return null;
         }
 
-        const totalWins = didWin ? player.totalWins + 1 : player.totalWins;
-        const totalLosses = didWin ? player.totalLosses : player.totalLosses + 1;
+        const totalWins = didWin ? existingPlayer.totalWins + 1 : existingPlayer.totalWins;
+        const totalLosses = didWin ? existingPlayer.totalLosses : existingPlayer.totalLosses + 1;
         const updatedPlayer: Partial<Player> = {
             totalWins,
             totalLosses,

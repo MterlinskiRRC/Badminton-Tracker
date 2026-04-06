@@ -33,22 +33,22 @@ export class MatchService {
         await this.ensurePlayerExists(input.playerId, "Player not found");
         await this.ensurePlayerExists(input.opponentId, "Opponent not found");
 
-        const now = new Date().toISOString();
+        const timestamp = new Date().toISOString();
         const match: Match = {
             id: randomUUID(),
             playerId: input.playerId,
             opponentId: input.opponentId,
             result: input.result,
-            playedAt: input.playedAt ?? now,
-            createdAt: now,
+            playedAt: input.playedAt ?? timestamp,
+            createdAt: timestamp,
         };
 
-        const createdMatch = await this.matchRepository.create(match);
+        const persistedMatch = await this.matchRepository.create(match);
 
         await this.playerService.applyMatchResult(input.playerId, input.result === "win");
         await this.playerService.applyMatchResult(input.opponentId, input.result !== "win");
 
-        return createdMatch;
+        return persistedMatch;
     }
 
     async ensurePlayerExists(playerId: string, errorMessage: string): Promise<void> {

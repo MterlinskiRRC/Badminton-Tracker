@@ -9,9 +9,9 @@ export class RankingService {
     }
 
     async getRankings(): Promise<Ranking[]> {
-        const players = await this.playerService.getAll();
+        const allPlayers = await this.playerService.getAll();
 
-        const sortedPlayers = [...players].sort((a, b) => {
+        const rankedPlayers = [...allPlayers].sort((a, b) => {
             const scoreDifference = this.calculateScore(b.totalWins, b.totalLosses) -
                 this.calculateScore(a.totalWins, a.totalLosses);
             if (scoreDifference !== 0) {
@@ -21,7 +21,7 @@ export class RankingService {
             return b.winPercentage - a.winPercentage;
         });
 
-        return sortedPlayers.map((player, index): Ranking => ({
+        return rankedPlayers.map((player, index): Ranking => ({
             playerId: player.id,
             playerName: player.name,
             rankingScore: this.calculateScore(player.totalWins, player.totalLosses),
