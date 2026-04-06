@@ -12,9 +12,9 @@ export class AnalyticsService {
 
     recordMatch(playerId: string, opponentId: string): void {
         this.matchesRecorded += 1;
-        [playerId, opponentId].forEach((id) => {
-            const currentValue = this.playerActivity.get(id) ?? 0;
-            this.playerActivity.set(id, currentValue + 1);
+        [playerId, opponentId].forEach((participantId) => {
+            const currentMatchCount = this.playerActivity.get(participantId) ?? 0;
+            this.playerActivity.set(participantId, currentMatchCount + 1);
         });
     }
 
