@@ -5,10 +5,17 @@ import { HttpError } from "../utils/httpError";
 import { PlayerService } from "./playerService";
 
 export class MatchService {
+    matchRepository: MatchRepository;
+
+    playerService: PlayerService;
+
     constructor(
-        private readonly matchRepository: MatchRepository,
-        private readonly playerService: PlayerService
-    ) {}
+        matchRepository: MatchRepository,
+        playerService: PlayerService
+    ) {
+        this.matchRepository = matchRepository;
+        this.playerService = playerService;
+    }
 
     async getAll(): Promise<Match[]> {
         return this.matchRepository.findAll();
@@ -44,7 +51,7 @@ export class MatchService {
         return createdMatch;
     }
 
-    private async ensurePlayerExists(playerId: string, errorMessage: string): Promise<void> {
+    async ensurePlayerExists(playerId: string, errorMessage: string): Promise<void> {
         const player = await this.playerService.getById(playerId);
         if (!player) {
             throw HttpError.notFound(errorMessage);

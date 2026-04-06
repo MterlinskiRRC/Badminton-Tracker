@@ -2,7 +2,11 @@ import { Ranking } from "../models/ranking";
 import { PlayerService } from "./playerService";
 
 export class RankingService {
-    constructor(private readonly playerService: PlayerService) {}
+    playerService: PlayerService;
+
+    constructor(playerService: PlayerService) {
+        this.playerService = playerService;
+    }
 
     async getRankings(): Promise<Ranking[]> {
         const players = await this.playerService.getAll();
@@ -28,7 +32,7 @@ export class RankingService {
         }));
     }
 
-    private calculateScore(totalWins: number, totalLosses: number): number {
+    calculateScore(totalWins: number, totalLosses: number): number {
         return totalWins * 3 - totalLosses;
     }
 }
