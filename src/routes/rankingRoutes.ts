@@ -1,11 +1,9 @@
 import { Router } from "express";
-import { verifyFirebaseToken } from "../middleware/auth";
+import { requirePlayerAuth } from "../middleware/auth";
 import { rankingController } from "../services/dependencies";
 
 const rankingRouter: Router = Router();
 
-rankingRouter.use(verifyFirebaseToken);
-
-rankingRouter.get("/", rankingController.getAll);
+rankingRouter.get("/", requirePlayerAuth(), rankingController.getAll);
 
 export default rankingRouter;

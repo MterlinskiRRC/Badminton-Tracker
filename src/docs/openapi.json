@@ -3,7 +3,7 @@
     "info": {
         "title": "Badminton Score Tracker API",
         "version": "0.1.0",
-        "description": "Milestone 1 API documentation for players, matches, rankings, and analytics."
+        "description": "Milestone 1 API documentation for players, matches, rankings, and analytics.\n\nAuthentication:\n- All /api/v1 endpoints require a Firebase ID token.\n- Click Authorize in Swagger UI and provide: Bearer <FIREBASE_ID_TOKEN>.\n- /health and /docs are public."
     },
     "servers": [
         {
@@ -33,7 +33,7 @@
         "/api/v1/players": {
             "post": {
                 "tags": ["Players"],
-                "summary": "Create a new player (admin)",
+                "summary": "Create a new player",
                 "security": [{ "bearerAuth": [] }],
                 "requestBody": {
                     "required": true,
@@ -45,8 +45,7 @@
                 },
                 "responses": {
                     "201": { "description": "Player created" },
-                    "401": { "description": "Unauthorized" },
-                    "403": { "description": "Forbidden" }
+                    "401": { "description": "Unauthorized" }
                 }
             },
             "get": {
@@ -67,6 +66,7 @@
                 "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
                 "responses": {
                     "200": { "description": "Player found" },
+                    "401": { "description": "Unauthorized" },
                     "404": { "description": "Player not found" }
                 }
             },
@@ -116,6 +116,7 @@
                 },
                 "responses": {
                     "201": { "description": "Match created" },
+                    "401": { "description": "Unauthorized" },
                     "400": { "description": "Invalid payload" },
                     "404": { "description": "Player or opponent not found" }
                 }
@@ -125,7 +126,8 @@
                 "summary": "List all matches",
                 "security": [{ "bearerAuth": [] }],
                 "responses": {
-                    "200": { "description": "Match list" }
+                    "200": { "description": "Match list" },
+                    "401": { "description": "Unauthorized" }
                 }
             }
         },
@@ -137,6 +139,7 @@
                 "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
                 "responses": {
                     "200": { "description": "Match found" },
+                    "401": { "description": "Unauthorized" },
                     "404": { "description": "Match not found" }
                 }
             }
@@ -147,18 +150,19 @@
                 "summary": "Generate live player rankings",
                 "security": [{ "bearerAuth": [] }],
                 "responses": {
-                    "200": { "description": "Ranking list" }
+                    "200": { "description": "Ranking list" },
+                    "401": { "description": "Unauthorized" }
                 }
             }
         },
         "/api/v1/analytics": {
             "get": {
                 "tags": ["Analytics"],
-                "summary": "Get analytics summary (admin)",
+                "summary": "Get analytics summary",
                 "security": [{ "bearerAuth": [] }],
                 "responses": {
                     "200": { "description": "Analytics summary" },
-                    "403": { "description": "Forbidden" }
+                    "401": { "description": "Unauthorized" }
                 }
             }
         }
@@ -168,7 +172,8 @@
             "bearerAuth": {
                 "type": "http",
                 "scheme": "bearer",
-                "bearerFormat": "JWT"
+                "bearerFormat": "JWT",
+                "description": "Firebase Authentication ID token.\n\nHeader format: Authorization: Bearer <FIREBASE_ID_TOKEN>"
             }
         },
         "parameters": {

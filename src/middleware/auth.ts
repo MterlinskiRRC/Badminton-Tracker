@@ -3,6 +3,12 @@ import { DecodedIdToken } from "firebase-admin/auth";
 import { getFirebaseAdmin } from "../config/firebase";
 import { AuthenticationError, AuthorizationError } from "../errors/appError";
 
+type UserRole = "user" | "admin";
+
+function normalizeRole(roleValue: unknown): UserRole {
+    return roleValue === "admin" ? "admin" : "user";
+}
+
 export async function verifyFirebaseToken(
     req: Request,
     _res: Response,
@@ -28,8 +34,7 @@ export async function verifyFirebaseToken(
 
     try {
         const decoded: DecodedIdToken = await getFirebaseAdmin().auth().verifyIdToken(token);
-        const roleValue: unknown = decoded.role;
-        const role: string = typeof roleValue === "string" ? roleValue : "player";
+        const role: UserRole = normalizeRole(decoded.role);
 
         req.user = {
             uid: decoded.uid,
@@ -42,9 +47,9 @@ export async function verifyFirebaseToken(
     }
 }
 
-export function requireRole(...allowedRoles: string[]): (req: Request, res: Response, next: NextFunction) => void {
+export function requireRole(...allowedRoles: UserRole[]): (req: Request, res: Response, next: NextFunction) => void {
     return (req: Request, _res: Response, next: NextFunction): void => {
-        const userRole: string | undefined = req.user?.role;
+        const userRole: UserRole | undefined = req.user?.role;
         if (!userRole || !allowedRoles.includes(userRole)) {
             next(new AuthorizationError("Forbidden: insufficient permissions", "INSUFFICIENT_ROLE"));
             return;
@@ -52,4 +57,8 @@ export function requireRole(...allowedRoles: string[]): (req: Request, res: Resp
 
         next();
     };
+}
+
+export function requirePlayerAuth(): (req: Request, res: Response, next: NextFunction) => void {
+    return requireRole("user", "admin");
 }
