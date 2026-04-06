@@ -3,37 +3,31 @@ export interface AnalyticsSummary {
     mostActivePlayers: Array<{ playerId: string; matchCount: number }>;
 }
 
+type PlayerActivityEntry = { playerId: string; matchCount: number };
+
 export class AnalyticsService {
     matchesRecorded: number = 0;
 
-    playerActivity: Map<string, number> = new Map<string, number>();
+    playerActivity: Map<string, number> = new Map();
 
     recordMatch(playerId: string, opponentId: string): void {
         this.matchesRecorded += 1;
-        this.incrementPlayerActivity(playerId);
-        this.incrementPlayerActivity(opponentId);
+        [playerId, opponentId].forEach((id) => {
+            const currentValue = this.playerActivity.get(id) ?? 0;
+            this.playerActivity.set(id, currentValue + 1);
+        });
     }
 
     getSummary(): AnalyticsSummary {
-        const mostActivePlayers: Array<{ playerId: string; matchCount: number }> =
+        const mostActivePlayers: PlayerActivityEntry[] =
             Array.from(this.playerActivity.entries())
-                .map(([playerId, matchCount]: [string, number]) => ({ playerId, matchCount }))
-                .sort(
-                    (
-                        a: { playerId: string; matchCount: number },
-                        b: { playerId: string; matchCount: number }
-                    ): number => b.matchCount - a.matchCount
-                )
+                .map(([playerId, matchCount]) => ({ playerId, matchCount }))
+                .sort((a, b) => b.matchCount - a.matchCount)
                 .slice(0, 5);
 
         return {
             matchesRecorded: this.matchesRecorded,
             mostActivePlayers,
         };
-    }
-
-    incrementPlayerActivity(playerId: string): void {
-        const currentValue: number = this.playerActivity.get(playerId) ?? 0;
-        this.playerActivity.set(playerId, currentValue + 1);
     }
 }

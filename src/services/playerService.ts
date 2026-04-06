@@ -18,8 +18,8 @@ export class PlayerService {
     }
 
     async create(input: CreatePlayerInput): Promise<Player> {
-        const now: string = new Date().toISOString();
-        const player: Player = {
+        const now = new Date().toISOString();
+        const player = {
             id: randomUUID(),
             name: input.name,
             totalWins: 0,
@@ -44,13 +44,13 @@ export class PlayerService {
     }
 
     async applyMatchResult(playerId: string, didWin: boolean): Promise<Player | null> {
-        const player: Player | null = await this.playerRepository.findById(playerId);
+        const player = await this.playerRepository.findById(playerId);
         if (!player) {
             return null;
         }
 
-        const totalWins: number = didWin ? player.totalWins + 1 : player.totalWins;
-        const totalLosses: number = didWin ? player.totalLosses : player.totalLosses + 1;
+        const totalWins = didWin ? player.totalWins + 1 : player.totalWins;
+        const totalLosses = didWin ? player.totalLosses : player.totalLosses + 1;
         const updatedPlayer: Partial<Player> = {
             totalWins,
             totalLosses,
@@ -62,12 +62,12 @@ export class PlayerService {
     }
 
     calculateWinPercentage(totalWins: number, totalLosses: number): number {
-        const totalMatches: number = totalWins + totalLosses;
+        const totalMatches = totalWins + totalLosses;
         if (totalMatches === 0) {
             return 0;
         }
 
-        const rawPercentage: number = (totalWins / totalMatches) * 100;
+        const rawPercentage = (totalWins / totalMatches) * 100;
         return Number(rawPercentage.toFixed(2));
     }
 }

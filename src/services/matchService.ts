@@ -33,7 +33,7 @@ export class MatchService {
         await this.ensurePlayerExists(input.playerId, "Player not found");
         await this.ensurePlayerExists(input.opponentId, "Opponent not found");
 
-        const now: string = new Date().toISOString();
+        const now = new Date().toISOString();
         const match: Match = {
             id: randomUUID(),
             playerId: input.playerId,
@@ -43,7 +43,7 @@ export class MatchService {
             createdAt: now,
         };
 
-        const createdMatch: Match = await this.matchRepository.create(match);
+        const createdMatch = await this.matchRepository.create(match);
 
         await this.playerService.applyMatchResult(input.playerId, input.result === "win");
         await this.playerService.applyMatchResult(input.opponentId, input.result !== "win");

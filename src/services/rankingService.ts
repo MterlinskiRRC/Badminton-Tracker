@@ -11,8 +11,8 @@ export class RankingService {
     async getRankings(): Promise<Ranking[]> {
         const players = await this.playerService.getAll();
 
-        const sortedPlayers = [...players].sort((a, b): number => {
-            const scoreDifference: number = this.calculateScore(b.totalWins, b.totalLosses) -
+        const sortedPlayers = [...players].sort((a, b) => {
+            const scoreDifference = this.calculateScore(b.totalWins, b.totalLosses) -
                 this.calculateScore(a.totalWins, a.totalLosses);
             if (scoreDifference !== 0) {
                 return scoreDifference;
