@@ -14,41 +14,24 @@ export function initializeFirebase(): void {
         return;
     }
 
-    const projectId: string | undefined = process.env.FIREBASE_PROJECT_ID;
-    const clientEmail: string | undefined = process.env.FIREBASE_CLIENT_EMAIL;
-    const privateKey: string | undefined = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-    const serviceAccountPath: string | undefined = process.env.FIREBASE_SERVICE_ACCOUNT_PATH ?? process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    const serviceAccountPath: string | undefined = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
 
-    if (serviceAccountPath) {
-        const serviceAccountRaw: string = readFileSync(serviceAccountPath, "utf8");
-        const serviceAccount: ServiceAccountCredential = JSON.parse(serviceAccountRaw) as ServiceAccountCredential;
-
-        admin.initializeApp({
-            credential: admin.credential.cert({
-                projectId: serviceAccount.project_id,
-                clientEmail: serviceAccount.client_email,
-                privateKey: serviceAccount.private_key,
-            }),
-        });
-        appInitialized = true;
-        return;
+    if (!serviceAccountPath) {
+        throw new Error("FIREBASE_SERVICE_ACCOUNT_PATH is required.");
     }
 
-    if (projectId && clientEmail && privateKey) {
-        admin.initializeApp({
-            credential: admin.credential.cert({
-                projectId,
-                clientEmail,
-                privateKey,
-            }),
-        });
-        appInitialized = true;
-        return;
-    }
+    const serviceAccountRaw: string = readFileSync(serviceAccountPath, "utf8");
+    const serviceAccount: ServiceAccountCredential = JSON.parse(serviceAccountRaw) as ServiceAccountCredential;
 
-    throw new Error(
-        "Firebase credentials are required. Set FIREBASE_SERVICE_ACCOUNT_PATH or GOOGLE_APPLICATION_CREDENTIALS, or set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY."
-    );
+    admin.initializeApp({
+        credential: admin.credential.cert({
+            projectId: serviceAccount.project_id,
+            clientEmail: serviceAccount.client_email,
+            privateKey: serviceAccount.private_key,
+        }),
+    });
+    appInitialized = true;
+    return;
 }
 
 export function getFirebaseAdmin(): typeof admin {
@@ -57,4 +40,11 @@ export function getFirebaseAdmin(): typeof admin {
     }
 
     return admin;
+}
+
+export async function verifyFirebaseConnections(): Promise<void> {
+    const adminApp = getFirebaseAdmin();
+
+    await adminApp.auth().listUsers(1);
+    await adminApp.firestore().collection("connection_test").doc("ping").get();
 }
