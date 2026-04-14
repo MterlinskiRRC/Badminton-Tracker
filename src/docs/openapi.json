@@ -25,7 +25,14 @@
                 "summary": "API health check",
                 "responses": {
                     "200": {
-                        "description": "Service is healthy"
+                        "description": "Service is healthy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessEnvelope"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -44,8 +51,31 @@
                     }
                 },
                 "responses": {
-                    "201": { "description": "Player created" },
-                    "401": { "description": "Unauthorized" }
+                    "201": {
+                        "description": "Player created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        { "$ref": "#/components/schemas/SuccessEnvelope" },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "$ref": "#/components/schemas/Player"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Player created"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "401": { "$ref": "#/components/responses/Unauthorized" }
                 }
             },
             "get": {
@@ -53,8 +83,27 @@
                 "summary": "List all players",
                 "security": [{ "bearerAuth": [] }],
                 "responses": {
-                    "200": { "description": "Player list" },
-                    "401": { "description": "Unauthorized" }
+                    "200": {
+                        "description": "Player list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        { "$ref": "#/components/schemas/SuccessEnvelope" },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": { "$ref": "#/components/schemas/Player" }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/Unauthorized" }
                 }
             }
         },
@@ -65,9 +114,25 @@
                 "security": [{ "bearerAuth": [] }],
                 "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
                 "responses": {
-                    "200": { "description": "Player found" },
-                    "401": { "description": "Unauthorized" },
-                    "404": { "description": "Player not found" }
+                    "200": {
+                        "description": "Player found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        { "$ref": "#/components/schemas/SuccessEnvelope" },
+                                        {
+                                            "properties": {
+                                                "data": { "$ref": "#/components/schemas/Player" }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/Unauthorized" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
                 }
             },
             "patch": {
@@ -84,9 +149,31 @@
                     }
                 },
                 "responses": {
-                    "200": { "description": "Player updated" },
-                    "403": { "description": "Forbidden" },
-                    "404": { "description": "Player not found" }
+                    "200": {
+                        "description": "Player updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        { "$ref": "#/components/schemas/SuccessEnvelope" },
+                                        {
+                                            "properties": {
+                                                "data": { "$ref": "#/components/schemas/Player" },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Player updated"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "401": { "$ref": "#/components/responses/Unauthorized" },
+                    "403": { "$ref": "#/components/responses/Forbidden" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
                 }
             },
             "delete": {
@@ -96,8 +183,9 @@
                 "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
                 "responses": {
                     "204": { "description": "Player deleted" },
-                    "403": { "description": "Forbidden" },
-                    "404": { "description": "Player not found" }
+                    "401": { "$ref": "#/components/responses/Unauthorized" },
+                    "403": { "$ref": "#/components/responses/Forbidden" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
                 }
             }
         },
@@ -115,10 +203,30 @@
                     }
                 },
                 "responses": {
-                    "201": { "description": "Match created" },
-                    "401": { "description": "Unauthorized" },
-                    "400": { "description": "Invalid payload" },
-                    "404": { "description": "Player or opponent not found" }
+                    "201": {
+                        "description": "Match created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        { "$ref": "#/components/schemas/SuccessEnvelope" },
+                                        {
+                                            "properties": {
+                                                "data": { "$ref": "#/components/schemas/Match" },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Match recorded"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/BadRequest" },
+                    "401": { "$ref": "#/components/responses/Unauthorized" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
                 }
             },
             "get": {
@@ -126,8 +234,27 @@
                 "summary": "List all matches",
                 "security": [{ "bearerAuth": [] }],
                 "responses": {
-                    "200": { "description": "Match list" },
-                    "401": { "description": "Unauthorized" }
+                    "200": {
+                        "description": "Match list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        { "$ref": "#/components/schemas/SuccessEnvelope" },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": { "$ref": "#/components/schemas/Match" }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/Unauthorized" }
                 }
             }
         },
@@ -138,9 +265,25 @@
                 "security": [{ "bearerAuth": [] }],
                 "parameters": [{ "$ref": "#/components/parameters/IdPath" }],
                 "responses": {
-                    "200": { "description": "Match found" },
-                    "401": { "description": "Unauthorized" },
-                    "404": { "description": "Match not found" }
+                    "200": {
+                        "description": "Match found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        { "$ref": "#/components/schemas/SuccessEnvelope" },
+                                        {
+                                            "properties": {
+                                                "data": { "$ref": "#/components/schemas/Match" }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/Unauthorized" },
+                    "404": { "$ref": "#/components/responses/NotFound" }
                 }
             }
         },
@@ -150,8 +293,27 @@
                 "summary": "Generate live player rankings",
                 "security": [{ "bearerAuth": [] }],
                 "responses": {
-                    "200": { "description": "Ranking list" },
-                    "401": { "description": "Unauthorized" }
+                    "200": {
+                        "description": "Ranking list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        { "$ref": "#/components/schemas/SuccessEnvelope" },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": { "$ref": "#/components/schemas/Ranking" }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/Unauthorized" }
                 }
             }
         },
@@ -161,9 +323,25 @@
                 "summary": "Get analytics summary (admin)",
                 "security": [{ "bearerAuth": [] }],
                 "responses": {
-                    "200": { "description": "Analytics summary" },
-                    "401": { "description": "Unauthorized" },
-                    "403": { "description": "Forbidden" }
+                    "200": {
+                        "description": "Analytics summary",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        { "$ref": "#/components/schemas/SuccessEnvelope" },
+                                        {
+                                            "properties": {
+                                                "data": { "$ref": "#/components/schemas/AnalyticsSummary" }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/Unauthorized" },
+                    "403": { "$ref": "#/components/responses/Forbidden" }
                 }
             }
         }
@@ -185,7 +363,67 @@
                 "schema": { "type": "string" }
             }
         },
+        "responses": {
+            "BadRequest": {
+                "description": "Bad request",
+                "content": {
+                    "application/json": {
+                        "schema": { "$ref": "#/components/schemas/ErrorEnvelope" }
+                    }
+                }
+            },
+            "Unauthorized": {
+                "description": "Unauthorized",
+                "content": {
+                    "application/json": {
+                        "schema": { "$ref": "#/components/schemas/ErrorEnvelope" }
+                    }
+                }
+            },
+            "Forbidden": {
+                "description": "Forbidden",
+                "content": {
+                    "application/json": {
+                        "schema": { "$ref": "#/components/schemas/ErrorEnvelope" }
+                    }
+                }
+            },
+            "NotFound": {
+                "description": "Not found",
+                "content": {
+                    "application/json": {
+                        "schema": { "$ref": "#/components/schemas/ErrorEnvelope" }
+                    }
+                }
+            }
+        },
         "schemas": {
+            "SuccessEnvelope": {
+                "type": "object",
+                "required": ["success", "timestamp"],
+                "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "data": {},
+                    "message": { "type": "string" },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                }
+            },
+            "ErrorEnvelope": {
+                "type": "object",
+                "required": ["success", "error", "timestamp"],
+                "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "error": {
+                        "type": "object",
+                        "required": ["message", "code"],
+                        "properties": {
+                            "message": { "type": "string" },
+                            "code": { "type": "string" }
+                        }
+                    },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                }
+            },
             "CreatePlayer": {
                 "type": "object",
                 "required": ["name"],
@@ -199,6 +437,19 @@
                     "name": { "type": "string" }
                 }
             },
+            "Player": {
+                "type": "object",
+                "required": ["id", "name", "totalWins", "totalLosses", "winPercentage", "createdAt", "updatedAt"],
+                "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "totalWins": { "type": "number" },
+                    "totalLosses": { "type": "number" },
+                    "winPercentage": { "type": "number" },
+                    "createdAt": { "type": "string" },
+                    "updatedAt": { "type": "string" }
+                }
+            },
             "CreateMatch": {
                 "type": "object",
                 "required": ["playerId", "opponentId", "result"],
@@ -207,6 +458,49 @@
                     "opponentId": { "type": "string" },
                     "result": { "type": "string", "enum": ["win", "loss"] },
                     "playedAt": { "type": "string", "format": "date-time" }
+                }
+            },
+            "Match": {
+                "type": "object",
+                "required": ["id", "playerId", "opponentId", "result", "playedAt", "createdAt"],
+                "properties": {
+                    "id": { "type": "string" },
+                    "playerId": { "type": "string" },
+                    "opponentId": { "type": "string" },
+                    "result": { "type": "string", "enum": ["win", "loss"] },
+                    "playedAt": { "type": "string" },
+                    "createdAt": { "type": "string" }
+                }
+            },
+            "Ranking": {
+                "type": "object",
+                "required": ["playerId", "playerName", "rankingScore", "position", "totalWins", "totalLosses", "winPercentage"],
+                "properties": {
+                    "playerId": { "type": "string" },
+                    "playerName": { "type": "string" },
+                    "rankingScore": { "type": "number" },
+                    "position": { "type": "number" },
+                    "totalWins": { "type": "number" },
+                    "totalLosses": { "type": "number" },
+                    "winPercentage": { "type": "number" }
+                }
+            },
+            "AnalyticsSummary": {
+                "type": "object",
+                "required": ["matchesRecorded", "mostActivePlayers"],
+                "properties": {
+                    "matchesRecorded": { "type": "number" },
+                    "mostActivePlayers": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": ["playerId", "matchCount"],
+                            "properties": {
+                                "playerId": { "type": "string" },
+                                "matchCount": { "type": "number" }
+                            }
+                        }
+                    }
                 }
             }
         }
