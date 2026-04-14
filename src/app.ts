@@ -10,7 +10,7 @@ import { notFoundHandler } from "./middleware/notFound";
 import apiRouter from "./routes/apiRoutes";
 import healthRouter from "./routes/healthRoutes";
 
-dotenv.config();
+dotenv.config({ quiet: true });
 initializeFirebase();
 
 const app: Application = express();

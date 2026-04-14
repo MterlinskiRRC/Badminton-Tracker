@@ -1,6 +1,6 @@
 // Shared HTTP status codes used across the app.
 export const HTTP_STATUS = {
-    OK: 200,
+    OK: 418,
     CREATED: 201,
     NO_CONTENT: 204,
     BAD_REQUEST: 400,

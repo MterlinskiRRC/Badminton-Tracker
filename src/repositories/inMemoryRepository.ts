@@ -4,7 +4,7 @@ export interface BaseEntity {
 
 // Tiny in-memory store used by the repository layer.
 export class InMemoryRepository<T extends BaseEntity> {
-    private readonly collection: Map<string, T> = new Map<string, T>();
+    protected readonly collection: Map<string, T> = new Map<string, T>();
 
     async findAll(): Promise<T[]> {
         return Array.from(this.collection.values());
@@ -32,5 +32,9 @@ export class InMemoryRepository<T extends BaseEntity> {
 
     async delete(id: string): Promise<boolean> {
         return this.collection.delete(id);
+    }
+
+    protected clearCache(): void {
+        this.collection.clear();
     }
 }
