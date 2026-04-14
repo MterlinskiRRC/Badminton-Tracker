@@ -3,7 +3,7 @@
     "info": {
         "title": "Badminton Score Tracker API",
         "version": "0.1.0",
-        "description": "Milestone 1 API documentation for players, matches, rankings, and analytics.\n\nAuthentication:\n- All /api/v1 endpoints require a Firebase ID token.\n- Click Authorize in Swagger UI and provide: Bearer <FIREBASE_ID_TOKEN>.\n- /health and /docs are public."
+        "description": "Milestone 1 API documentation for players, matches, rankings, and analytics.\n\nAuthentication:\n- All /api/v1 endpoints require a Firebase ID token.\n- Click Authorize in Swagger UI and provide: Bearer <FIREBASE_ID_TOKEN>.\n- /health and /docs are public.\n- The API requires Firebase Admin credentials at startup."
     },
     "servers": [
         {
@@ -158,11 +158,12 @@
         "/api/v1/analytics": {
             "get": {
                 "tags": ["Analytics"],
-                "summary": "Get analytics summary",
+                "summary": "Get analytics summary (admin)",
                 "security": [{ "bearerAuth": [] }],
                 "responses": {
                     "200": { "description": "Analytics summary" },
-                    "401": { "description": "Unauthorized" }
+                    "401": { "description": "Unauthorized" },
+                    "403": { "description": "Forbidden" }
                 }
             }
         }

@@ -59,7 +59,7 @@ Badminton Score Tracker API for recording match outcomes and tracking player per
 ## Security Notes
 - Firebase Authentication token verification middleware added.
 - Role-based checks for admin-only endpoints.
-- Local development can use BYPASS_AUTH=true.
+- Local development must use Firebase credentials or a valid Firebase ID token.
 
 ## Notes
 - Repository implementation uses in-memory storage for Milestone 1.
