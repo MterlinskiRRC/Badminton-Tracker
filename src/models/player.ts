@@ -1,3 +1,4 @@
+// Player records store match stats and audit timestamps.
 export interface Player {
     id: string;
     name: string;

@@ -6,6 +6,7 @@ import { playerSchemas } from "../validation/playerSchemas";
 
 const playerRouter: Router = Router();
 
+// Protect player routes and validate request payloads.
 playerRouter.post(
     "/",
     requirePlayerAuth(),

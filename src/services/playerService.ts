@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { CreatePlayerInput, Player, UpdatePlayerInput } from "../models/player";
 import { PlayerRepository } from "../repositories/playerRepository";
 
+// Handle player CRUD and stat updates.
 export class PlayerService {
     playerRepository: PlayerRepository;
 
@@ -18,6 +19,7 @@ export class PlayerService {
     }
 
     async create(input: CreatePlayerInput): Promise<Player> {
+        // Start every new player with zero stats.
         const timestamp = new Date().toISOString();
         const player = {
             id: randomUUID(),
@@ -49,6 +51,7 @@ export class PlayerService {
             return null;
         }
 
+        // Update the running win/loss totals after each match.
         const totalWins = didWin ? existingPlayer.totalWins + 1 : existingPlayer.totalWins;
         const totalLosses = didWin ? existingPlayer.totalLosses : existingPlayer.totalLosses + 1;
         const updatedPlayer: Partial<Player> = {
@@ -62,6 +65,7 @@ export class PlayerService {
     }
 
     calculateWinPercentage(totalWins: number, totalLosses: number): number {
+        // Keep the percentage rounded to two decimals.
         const totalMatches = totalWins + totalLosses;
         if (totalMatches === 0) {
             return 0;

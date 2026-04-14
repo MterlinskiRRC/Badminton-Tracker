@@ -1,3 +1,4 @@
+// Shared HTTP status codes used across the app.
 export const HTTP_STATUS = {
     OK: 200,
     CREATED: 201,

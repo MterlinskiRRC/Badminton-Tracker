@@ -4,6 +4,7 @@ import { MatchRepository } from "../repositories/matchRepository";
 import { HttpError } from "../utils/httpError";
 import { PlayerService } from "./playerService";
 
+// Handle match creation and keep player stats in sync.
 export class MatchService {
     matchRepository: MatchRepository;
 
@@ -26,10 +27,12 @@ export class MatchService {
     }
 
     async create(input: CreateMatchInput): Promise<Match> {
+        // Do not allow a player to record a match against themselves.
         if (input.playerId === input.opponentId) {
             throw HttpError.badRequest("playerId and opponentId must be different");
         }
 
+        // Make sure both players already exist before saving the match.
         await this.ensurePlayerExists(input.playerId, "Player not found");
         await this.ensurePlayerExists(input.opponentId, "Opponent not found");
 
@@ -45,6 +48,7 @@ export class MatchService {
 
         const persistedMatch = await this.matchRepository.create(match);
 
+        // Update both player records after the match is saved.
         await this.playerService.applyMatchResult(input.playerId, input.result === "win");
         await this.playerService.applyMatchResult(input.opponentId, input.result !== "win");
 

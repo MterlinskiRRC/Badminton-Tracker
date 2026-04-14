@@ -1,3 +1,4 @@
+// Match records store the two players and the final result.
 export type MatchResult = "win" | "loss";
 
 export interface Match {

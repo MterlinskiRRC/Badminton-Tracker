@@ -4,6 +4,7 @@ import { successResponse } from "../models/responseModel";
 import { PlayerService } from "../services/playerService";
 import { HttpError } from "../utils/httpError";
 
+// Convert player service results into HTTP responses.
 export class PlayerController {
     constructor(private readonly playerService: PlayerService) {}
 

@@ -1,5 +1,6 @@
 import { HTTP_STATUS } from "../constants/httpStatus";
 
+// Base application error with a status code and machine-readable code.
 export class AppError extends Error {
     readonly code: string;
 
@@ -13,6 +14,7 @@ export class AppError extends Error {
     }
 }
 
+// Validation errors can include field-level details.
 export class ValidationError extends AppError {
     readonly details?: string[];
 
@@ -22,12 +24,14 @@ export class ValidationError extends AppError {
     }
 }
 
+// Authentication errors map to 401 responses.
 export class AuthenticationError extends AppError {
     constructor(message: string, code = "AUTHENTICATION_ERROR") {
         super(message, code, HTTP_STATUS.UNAUTHORIZED);
     }
 }
 
+// Authorization errors map to 403 responses.
 export class AuthorizationError extends AppError {
     constructor(message: string, code = "AUTHORIZATION_ERROR") {
         super(message, code, HTTP_STATUS.FORBIDDEN);

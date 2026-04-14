@@ -14,6 +14,7 @@ interface ValidationOptions {
     stripQuery?: boolean;
 }
 
+// Validate request data before the controller runs.
 export function validateRequest(
     schemas: RequestSchemas,
     options: ValidationOptions = {}

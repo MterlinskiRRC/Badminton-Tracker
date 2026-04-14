@@ -5,6 +5,7 @@ export interface AnalyticsSummary {
 
 type PlayerActivityEntry = { playerId: string; matchCount: number };
 
+// Keep a small in-memory summary of match activity.
 export class AnalyticsService {
     matchesRecorded: number = 0;
 
@@ -12,6 +13,7 @@ export class AnalyticsService {
 
     recordMatch(playerId: string, opponentId: string): void {
         this.matchesRecorded += 1;
+        // Count both participants as active players.
         [playerId, opponentId].forEach((participantId) => {
             const currentMatchCount = this.playerActivity.get(participantId) ?? 0;
             this.playerActivity.set(participantId, currentMatchCount + 1);
@@ -19,6 +21,7 @@ export class AnalyticsService {
     }
 
     getSummary(): AnalyticsSummary {
+        // Return the top five most active players.
         const mostActivePlayers: PlayerActivityEntry[] =
             Array.from(this.playerActivity.entries())
                 .map(([playerId, matchCount]) => ({ playerId, matchCount }))

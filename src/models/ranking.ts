@@ -1,3 +1,4 @@
+// Ranking rows are derived from player stats.
 export interface Ranking {
     playerId: string;
     playerName: string;

@@ -3,6 +3,7 @@ import { HTTP_STATUS } from "../constants/httpStatus";
 import { AppError, ValidationError } from "../errors/appError";
 import { errorResponse } from "../models/responseModel";
 
+// Convert known errors into the shared API error shape.
 export function errorHandler(
     error: unknown,
     _req: Request,

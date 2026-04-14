@@ -2,6 +2,7 @@ export interface BaseEntity {
     id: string;
 }
 
+// Tiny in-memory store used by the repository layer.
 export class InMemoryRepository<T extends BaseEntity> {
     private readonly collection: Map<string, T> = new Map<string, T>();
 

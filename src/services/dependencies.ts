@@ -9,6 +9,7 @@ import { MatchService } from "./matchService";
 import { PlayerService } from "./playerService";
 import { RankingService } from "./rankingService";
 
+// Wire the repositories, services, and controllers in one place.
 const playerRepository: PlayerRepository = new PlayerRepository();
 const matchRepository: MatchRepository = new MatchRepository();
 

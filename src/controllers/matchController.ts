@@ -5,6 +5,7 @@ import { AnalyticsService } from "../services/analyticsService";
 import { MatchService } from "../services/matchService";
 import { HttpError } from "../utils/httpError";
 
+// Convert match service results into HTTP responses.
 export class MatchController {
     constructor(
         private readonly matchService: MatchService,
@@ -27,6 +28,7 @@ export class MatchController {
 
     create = async (req: Request, res: Response): Promise<void> => {
         const created = await this.matchService.create(req.body);
+        // Update analytics after the match is stored.
         this.analyticsService.recordMatch(created.playerId, created.opponentId);
         res.status(HTTP_STATUS.CREATED).json(successResponse(created, "Match recorded"));
     };

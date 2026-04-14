@@ -15,6 +15,7 @@ initializeFirebase();
 
 const app: Application = express();
 
+// Keep security and request parsing in front of all routes.
 app.use(helmet());
 app.use(cors());
 app.use(express.json());

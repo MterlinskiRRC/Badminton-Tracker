@@ -3,6 +3,7 @@ import { HTTP_STATUS } from "../constants/httpStatus";
 import { successResponse } from "../models/responseModel";
 import { RankingService } from "../services/rankingService";
 
+// Return the current leaderboard as an HTTP response.
 export class RankingController {
     constructor(private readonly rankingService: RankingService) {}
 

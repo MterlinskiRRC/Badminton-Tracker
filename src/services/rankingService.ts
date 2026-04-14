@@ -1,6 +1,7 @@
 import { Ranking } from "../models/ranking";
 import { PlayerService } from "./playerService";
 
+// Turn player records into a ranked leaderboard.
 export class RankingService {
     playerService: PlayerService;
 
@@ -11,6 +12,7 @@ export class RankingService {
     async getRankings(): Promise<Ranking[]> {
         const allPlayers = await this.playerService.getAll();
 
+        // Sort by ranking score first, then win percentage.
         const rankedPlayers = [...allPlayers].sort((a, b) => {
             const scoreDifference = this.calculateScore(b.totalWins, b.totalLosses) -
                 this.calculateScore(a.totalWins, a.totalLosses);
@@ -33,6 +35,7 @@ export class RankingService {
     }
 
     calculateScore(totalWins: number, totalLosses: number): number {
+        // A simple score formula keeps rankings easy to understand.
         return totalWins * 3 - totalLosses;
     }
 }

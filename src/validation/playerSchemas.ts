@@ -1,9 +1,11 @@
 import Joi from "joi";
 
+// Shared id parameter validation for player routes.
 const idParamsSchema: Joi.ObjectSchema = Joi.object({
     id: Joi.string().trim().required(),
 });
 
+// Keep player payload validation simple and explicit.
 export const playerSchemas = {
     create: {
         body: Joi.object({

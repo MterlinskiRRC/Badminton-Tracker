@@ -5,10 +5,12 @@ import { AuthenticationError, AuthorizationError } from "../errors/appError";
 
 type UserRole = "user" | "admin";
 
+// Map Firebase role claims into the small role set used by the API.
 function normalizeRole(roleValue: unknown): UserRole {
     return roleValue === "admin" ? "admin" : "user";
 }
 
+// Verify the Firebase token and attach the authenticated user.
 export async function verifyFirebaseToken(
     req: Request,
     _res: Response,
@@ -16,6 +18,7 @@ export async function verifyFirebaseToken(
 ): Promise<void> {
     const bypassAuth: boolean = process.env.BYPASS_AUTH === "true";
 
+    // Allow local development to skip auth when explicitly requested.
     if (bypassAuth) {
         req.user = { uid: "local-dev-user", role: "admin" };
         next();
@@ -48,6 +51,7 @@ export async function verifyFirebaseToken(
 }
 
 export function requireRole(...allowedRoles: UserRole[]): (req: Request, res: Response, next: NextFunction) => void {
+    // Reject requests when the authenticated role is not allowed.
     return (req: Request, _res: Response, next: NextFunction): void => {
         const userRole: UserRole | undefined = req.user?.role;
         if (!userRole || !allowedRoles.includes(userRole)) {

@@ -3,6 +3,7 @@ import { HTTP_STATUS } from "../constants/httpStatus";
 import { successResponse } from "../models/responseModel";
 import { AnalyticsService } from "../services/analyticsService";
 
+// Return the current analytics summary as an HTTP response.
 export class AnalyticsController {
     constructor(private readonly analyticsService: AnalyticsService) {}
 
