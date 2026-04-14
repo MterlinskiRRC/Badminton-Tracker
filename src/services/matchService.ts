@@ -5,17 +5,10 @@ import { HttpError } from "../utils/httpError";
 import { PlayerService } from "./playerService";
 
 export class MatchService {
-    matchRepository: MatchRepository;
-
-    playerService: PlayerService;
-
     constructor(
-        matchRepository: MatchRepository,
-        playerService: PlayerService
-    ) {
-        this.matchRepository = matchRepository;
-        this.playerService = playerService;
-    }
+        private readonly matchRepository: MatchRepository,
+        private readonly playerService: PlayerService
+    ) {}
 
     async getAll(): Promise<Match[]> {
         return this.matchRepository.findAll();

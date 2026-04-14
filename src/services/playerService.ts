@@ -3,11 +3,7 @@ import { CreatePlayerInput, Player, UpdatePlayerInput } from "../models/player";
 import { PlayerRepository } from "../repositories/playerRepository";
 
 export class PlayerService {
-    playerRepository: PlayerRepository;
-
-    constructor(playerRepository: PlayerRepository) {
-        this.playerRepository = playerRepository;
-    }
+    constructor(private readonly playerRepository: PlayerRepository) {}
 
     async getAll(): Promise<Player[]> {
         return this.playerRepository.findAll();
@@ -61,7 +57,7 @@ export class PlayerService {
         return this.playerRepository.update(playerId, updatedPlayer);
     }
 
-    calculateWinPercentage(totalWins: number, totalLosses: number): number {
+    private calculateWinPercentage(totalWins: number, totalLosses: number): number {
         const totalMatches = totalWins + totalLosses;
         if (totalMatches === 0) {
             return 0;
