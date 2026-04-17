@@ -28,24 +28,13 @@ export class MatchRepository extends InMemoryRepository<Match> {
 
 	// Uses the in-memory cache first, then falls back to Firestore on a miss.
 	async findById(id: string): Promise<Match | null> {
-		const startedAt = process.hrtime.bigint();
-		console.log(`[CACHE CHECK] pid=${process.pid} matches/${id} size=${this.collection.size}`);
-
 		const cachedMatch = await super.findById(id);
 		if (cachedMatch) {
-			const durationMs = Number(process.hrtime.bigint() - startedAt) / 1_000_000;
-			console.log(
-				`[CACHE HIT] pid=${process.pid} matches/${id} size=${this.collection.size} duration=${durationMs.toFixed(2)}ms`
-			);
 			return cachedMatch;
 		}
 
-		console.log(`[CACHE MISS] pid=${process.pid} matches/${id} -> loading from Firestore`);
-
 		const doc = await this.getFirestoreCollection().doc(id).get();
 		if (!doc.exists) {
-			const durationMs = Number(process.hrtime.bigint() - startedAt) / 1_000_000;
-			console.log(`[CACHE MISS] pid=${process.pid} matches/${id} not found duration=${durationMs.toFixed(2)}ms`);
 			return null;
 		}
 
@@ -55,8 +44,6 @@ export class MatchRepository extends InMemoryRepository<Match> {
 		};
 
 		await super.create(match);
-		const durationMs = Number(process.hrtime.bigint() - startedAt) / 1_000_000;
-		console.log(`[CACHE STORE] pid=${process.pid} matches/${id} size=${this.collection.size} duration=${durationMs.toFixed(2)}ms`);
 		return match;
 	}
 

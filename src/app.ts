@@ -1,6 +1,6 @@
 import cors from "cors";
 import dotenv from "dotenv";
-import express, { Application } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
 import { initializeFirebase } from "./config/firebase";
@@ -19,6 +19,23 @@ const app: Application = express();
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+// Log each request so API traffic is visible in the server terminal.
+app.use((req: Request, res: Response, next: NextFunction): void => {
+	const startedAt: number = Date.now();
+
+	res.on("finish", () => {
+		const durationMs: number = Date.now() - startedAt;
+		const cacheControl: string = req.headers["cache-control"]?.toString() ?? "";
+
+		console.log(
+			`${req.method} ${req.originalUrl} ${res.statusCode} ${durationMs}ms` +
+				(cacheControl ? ` cache-control=${cacheControl}` : "")
+		);
+	});
+
+	next();
+});
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));
 app.use("/health", healthRouter);
