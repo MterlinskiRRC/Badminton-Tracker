@@ -16,15 +16,6 @@ export async function verifyFirebaseToken(
     _res: Response,
     next: NextFunction
 ): Promise<void> {
-    const bypassAuth: boolean = process.env.BYPASS_AUTH === "true";
-
-    // Allow local development to skip auth when explicitly requested.
-    if (bypassAuth) {
-        req.user = { uid: "local-dev-user", role: "admin" };
-        next();
-        return;
-    }
-
     const authHeader: string | undefined = req.headers.authorization;
     const token: string | undefined = authHeader?.startsWith("Bearer ")
         ? authHeader.slice("Bearer ".length)

@@ -14,6 +14,7 @@ export class PlayerController {
     };
 
     getById = async (req: Request, res: Response): Promise<void> => {
+        console.log(`[TRACE] GET /api/v1/players/${req.params.id}`);
         const player = await this.playerService.getById(req.params.id);
         if (!player) {
             throw HttpError.notFound("Player not found");

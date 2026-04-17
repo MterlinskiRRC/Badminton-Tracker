@@ -4,10 +4,12 @@ import { InMemoryRepository } from "./inMemoryRepository";
 
 // Match records are persisted to Firestore and mirrored in memory.
 export class MatchRepository extends InMemoryRepository<Match> {
+	// Centralizes collection selection and keeps Firestore access consistent.
 	private getFirestoreCollection() {
 		return getFirebaseAdmin().firestore().collection("matches");
 	}
 
+	// Reads all match documents, then refreshes the in-memory mirror.
 	async findAll(): Promise<Match[]> {
 		const snapshot = await this.getFirestoreCollection().get();
 		const matches: Match[] = snapshot.docs.map((doc) => ({
@@ -15,6 +17,7 @@ export class MatchRepository extends InMemoryRepository<Match> {
 			...(doc.data() as Omit<Match, "id">),
 		}));
 
+		// Ensure cache matches Firestore after a full collection read.
 		this.clearCache();
 		for (const match of matches) {
 			await super.create(match);
@@ -23,14 +26,26 @@ export class MatchRepository extends InMemoryRepository<Match> {
 		return matches;
 	}
 
+	// Uses the in-memory cache first, then falls back to Firestore on a miss.
 	async findById(id: string): Promise<Match | null> {
+		const startedAt = process.hrtime.bigint();
+		console.log(`[CACHE CHECK] pid=${process.pid} matches/${id} size=${this.collection.size}`);
+
 		const cachedMatch = await super.findById(id);
 		if (cachedMatch) {
+			const durationMs = Number(process.hrtime.bigint() - startedAt) / 1_000_000;
+			console.log(
+				`[CACHE HIT] pid=${process.pid} matches/${id} size=${this.collection.size} duration=${durationMs.toFixed(2)}ms`
+			);
 			return cachedMatch;
 		}
 
+		console.log(`[CACHE MISS] pid=${process.pid} matches/${id} -> loading from Firestore`);
+
 		const doc = await this.getFirestoreCollection().doc(id).get();
 		if (!doc.exists) {
+			const durationMs = Number(process.hrtime.bigint() - startedAt) / 1_000_000;
+			console.log(`[CACHE MISS] pid=${process.pid} matches/${id} not found duration=${durationMs.toFixed(2)}ms`);
 			return null;
 		}
 
@@ -40,15 +55,19 @@ export class MatchRepository extends InMemoryRepository<Match> {
 		};
 
 		await super.create(match);
+		const durationMs = Number(process.hrtime.bigint() - startedAt) / 1_000_000;
+		console.log(`[CACHE STORE] pid=${process.pid} matches/${id} size=${this.collection.size} duration=${durationMs.toFixed(2)}ms`);
 		return match;
 	}
 
+	// Persists to Firestore first, then updates the local cache.
 	async create(entity: Match): Promise<Match> {
 		await this.getFirestoreCollection().doc(entity.id).set(entity);
 		await super.create(entity);
 		return entity;
 	}
 
+	// Merges a partial patch onto the stored entity while keeping ID immutable.
 	async update(id: string, patch: Partial<Match>): Promise<Match | null> {
 		const existingDoc = await this.getFirestoreCollection().doc(id).get();
 		if (!existingDoc.exists) {
@@ -66,6 +85,7 @@ export class MatchRepository extends InMemoryRepository<Match> {
 		return updatedMatch;
 	}
 
+	// Deletes from both Firestore and cache; returns false when record is absent.
 	async delete(id: string): Promise<boolean> {
 		const doc = await this.getFirestoreCollection().doc(id).get();
 		if (!doc.exists) {
