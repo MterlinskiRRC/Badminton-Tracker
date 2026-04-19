@@ -28,14 +28,10 @@ export class PlayerRepository extends InMemoryRepository<Player> {
 
 	// Uses the in-memory cache first, then falls back to Firestore on a miss.
 	async findById(id: string): Promise<Player | null> {
-		console.log(`[CACHE CHECK] pid=${process.pid} players/${id} size=${this.collection.size}`);
 		const cachedPlayer = await super.findById(id);
 		if (cachedPlayer) {
-			console.log(`[CACHE HIT] pid=${process.pid} players/${id} size=${this.collection.size}`);
 			return cachedPlayer;
 		}
-
-		console.log(`[CACHE MISS] pid=${process.pid} players/${id} -> loading from Firestore`);
 
 		const doc = await this.getFirestoreCollection().doc(id).get();
 		if (!doc.exists) {
@@ -48,7 +44,6 @@ export class PlayerRepository extends InMemoryRepository<Player> {
 		};
 
 		await super.create(player);
-		console.log(`[CACHE STORE] pid=${process.pid} players/${id} size=${this.collection.size}`);
 		return player;
 	}
 
