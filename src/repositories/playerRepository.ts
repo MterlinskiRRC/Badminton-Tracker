@@ -5,7 +5,7 @@ import { InMemoryRepository } from "./inMemoryRepository";
 // Player records are persisted to Firestore and mirrored in memory.
 export class PlayerRepository extends InMemoryRepository<Player> {
 	// Centralizes collection selection and keeps Firestore access consistent.
-	private getFirestoreCollection() {
+	private getFirestoreCollection(): FirebaseFirestore.CollectionReference {
 		return getFirebaseAdmin().firestore().collection("players");
 	}
 

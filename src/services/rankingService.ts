@@ -3,11 +3,7 @@ import { PlayerService } from "./playerService";
 
 // Turn player records into a ranked leaderboard.
 export class RankingService {
-    playerService: PlayerService;
-
-    constructor(playerService: PlayerService) {
-        this.playerService = playerService;
-    }
+    constructor(private readonly playerService: PlayerService) {}
 
     async getRankings(): Promise<Ranking[]> {
         const allPlayers = await this.playerService.getAll();

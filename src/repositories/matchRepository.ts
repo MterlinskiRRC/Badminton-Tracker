@@ -5,7 +5,7 @@ import { InMemoryRepository } from "./inMemoryRepository";
 // Match records are persisted to Firestore and mirrored in memory.
 export class MatchRepository extends InMemoryRepository<Match> {
 	// Centralizes collection selection and keeps Firestore access consistent.
-	private getFirestoreCollection() {
+	private getFirestoreCollection(): FirebaseFirestore.CollectionReference {
 		return getFirebaseAdmin().firestore().collection("matches");
 	}
 

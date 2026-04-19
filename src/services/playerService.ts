@@ -4,11 +4,7 @@ import { PlayerRepository } from "../repositories/playerRepository";
 
 // Handle player CRUD and stat updates.
 export class PlayerService {
-    playerRepository: PlayerRepository;
-
-    constructor(playerRepository: PlayerRepository) {
-        this.playerRepository = playerRepository;
-    }
+    constructor(private readonly playerRepository: PlayerRepository) {}
 
     async getAll(): Promise<Player[]> {
         return this.playerRepository.findAll();
@@ -64,7 +60,7 @@ export class PlayerService {
         return this.playerRepository.update(playerId, updatedPlayer);
     }
 
-    calculateWinPercentage(totalWins: number, totalLosses: number): number {
+    private calculateWinPercentage(totalWins: number, totalLosses: number): number {
         // Keep the percentage rounded to two decimals.
         const totalMatches = totalWins + totalLosses;
         if (totalMatches === 0) {

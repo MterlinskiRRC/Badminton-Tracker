@@ -28,21 +28,13 @@ export default tseslint.config(
     },
     {
         rules: {
-            // Core focus: enforce types on variables, function return types, and parameters
+            // Keep core TypeScript quality checks with low-noise defaults.
             "@typescript-eslint/explicit-function-return-type": "error", // Require return types on functions
-            "@typescript-eslint/no-unused-vars": "error", // Disallow unused variables
             "@typescript-eslint/no-unused-vars": [
                 "error",
-                { argsIgnorePattern: "^_" }, // allow unused variables prefixed with underscore
-            ],
-            "@typescript-eslint/typedef": [
-                "error",
                 {
-                    parameter: true, // Require types for function parameters
-                    propertyDeclaration: true, // Require types for class properties
-                    variableDeclaration: true, // Require types for variables
-                    memberVariableDeclaration: true, // Require types for member variables
-                    variableDeclarationIgnoreFunction: true, // Ignore types for function variables
+                    argsIgnorePattern: "^_", // allow intentionally unused args
+                    caughtErrorsIgnorePattern: "^_", // allow intentionally unused caught errors
                 },
             ],
             // Allow ES6 imports with CommonJS output

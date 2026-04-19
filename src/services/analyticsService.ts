@@ -7,9 +7,9 @@ type PlayerActivityEntry = { playerId: string; matchCount: number };
 
 // Keep a small in-memory summary of match activity.
 export class AnalyticsService {
-    matchesRecorded: number = 0;
+    private matchesRecorded: number = 0;
 
-    playerActivity: Map<string, number> = new Map();
+    private readonly playerActivity: Map<string, number> = new Map<string, number>();
 
     recordMatch(playerId: string, opponentId: string): void {
         this.matchesRecorded += 1;
