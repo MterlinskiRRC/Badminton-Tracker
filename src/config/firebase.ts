@@ -1,10 +1,13 @@
 import admin from "firebase-admin";
-import dotenv from "dotenv";
-import { readFileSync } from "fs";
+import { readFileSync } from "node:fs";
+
+interface ServiceAccountCredential {
+    project_id: string;
+    client_email: string;
+    private_key: string;
+}
 
 let appInitialized: boolean = false;
-
-dotenv.config({ quiet: true });
 
 // Initialize Firebase Admin once for the whole process.
 export function initializeFirebase(): void {
@@ -12,17 +15,21 @@ export function initializeFirebase(): void {
         return;
     }
 
-    const serviceAccountPath: string | undefined = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
     const projectId: string | undefined = process.env.FIREBASE_PROJECT_ID;
     const clientEmail: string | undefined = process.env.FIREBASE_CLIENT_EMAIL;
     const privateKey: string | undefined = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+    const serviceAccountPath: string | undefined = process.env.FIREBASE_SERVICE_ACCOUNT_PATH ?? process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
     if (serviceAccountPath) {
-        const serviceAccountRaw = readFileSync(serviceAccountPath, "utf8");
-        const serviceAccount = JSON.parse(serviceAccountRaw) as admin.ServiceAccount;
+        const serviceAccountRaw: string = readFileSync(serviceAccountPath, "utf8");
+        const serviceAccount: ServiceAccountCredential = JSON.parse(serviceAccountRaw) as ServiceAccountCredential;
 
         admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount),
+            credential: admin.credential.cert({
+                projectId: serviceAccount.project_id,
+                clientEmail: serviceAccount.client_email,
+                privateKey: serviceAccount.private_key,
+            }),
         });
         appInitialized = true;
         return;
@@ -41,12 +48,9 @@ export function initializeFirebase(): void {
         return;
     }
 
-    // Fall back to the default app if no explicit credentials exist.
-    if (!admin.apps.length) {
-        admin.initializeApp();
-    }
-
-    appInitialized = true;
+    throw new Error(
+        "Firebase credentials are required. Set FIREBASE_SERVICE_ACCOUNT_PATH or GOOGLE_APPLICATION_CREDENTIALS, or set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY."
+    );
 }
 
 export function getFirebaseAdmin(): typeof admin {

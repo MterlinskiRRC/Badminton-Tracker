@@ -10,7 +10,11 @@ function normalizeRole(roleValue: unknown): UserRole {
     return roleValue === "admin" ? "admin" : "user";
 }
 
-// Verify the Firebase token and attach the authenticated user.
+function isTokenFromExpectedProject(decoded: DecodedIdToken, expectedProjectId: string): boolean {
+    const expectedIssuer: string = `https://securetoken.google.com/${expectedProjectId}`;
+    return decoded.aud === expectedProjectId && decoded.iss === expectedIssuer;
+}
+
 export async function verifyFirebaseToken(
     req: Request,
     _res: Response,
@@ -27,7 +31,15 @@ export async function verifyFirebaseToken(
     }
 
     try {
-        const decoded: DecodedIdToken = await getFirebaseAdmin().auth().verifyIdToken(token);
+        const checkRevoked: boolean = process.env.FIREBASE_CHECK_REVOKED === "true";
+        const expectedProjectId: string | undefined = process.env.FIREBASE_PROJECT_ID;
+        const decoded: DecodedIdToken = await getFirebaseAdmin().auth().verifyIdToken(token, checkRevoked);
+
+        if (expectedProjectId && !isTokenFromExpectedProject(decoded, expectedProjectId)) {
+            next(new AuthenticationError("Token does not belong to configured Firebase project", "TOKEN_PROJECT_MISMATCH"));
+            return;
+        }
+
         const role: UserRole = normalizeRole(decoded.role);
 
         req.user = {
