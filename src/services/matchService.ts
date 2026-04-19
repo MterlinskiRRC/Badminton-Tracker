@@ -6,10 +6,14 @@ import { PlayerService } from "./playerService";
 
 // Handle match creation and keep player stats in sync.
 export class MatchService {
-    constructor(
-        private readonly matchRepository: MatchRepository,
-        private readonly playerService: PlayerService
-    ) {}
+    readonly matchRepository: MatchRepository;
+
+    readonly playerService: PlayerService;
+
+    constructor(matchRepository: MatchRepository, playerService: PlayerService) {
+        this.matchRepository = matchRepository;
+        this.playerService = playerService;
+    }
 
     async getAll(): Promise<Match[]> {
         return this.matchRepository.findAll();
@@ -48,7 +52,7 @@ export class MatchService {
         return persistedMatch;
     }
 
-    private async ensurePlayerExists(playerId: string, errorMessage: string): Promise<void> {
+    async ensurePlayerExists(playerId: string, errorMessage: string): Promise<void> {
         const player = await this.playerService.getById(playerId);
         if (!player) {
             throw HttpError.notFound(errorMessage);
